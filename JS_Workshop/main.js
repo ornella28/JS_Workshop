@@ -80,6 +80,26 @@ categoryFilters.forEach(filter => {
     filter.addEventListener('change', () => {
         // TODO: Collect active categories
         // TODO: Filter products and re-render
+
+        // 1. Get all checked checkboxes
+        const selectedCategories = Array.from(categoryFilters)
+            .filter(cb => cb.checked)
+            .map(cb => cb.value);
+
+        // 2. If "all" is selected OR nothing is selected → show all products
+        if (selectedCategories.includes("all") || selectedCategories.length === 0) {
+            renderProducts(products);
+            return;
+        }
+
+        // 3. Filter products based on selected categories
+        const filteredProducts = products.filter(product =>
+            selectedCategories.includes(product.category)
+        );
+
+        // 4. Render filtered products
+        renderProducts(filteredProducts);
+
     });
 });
 

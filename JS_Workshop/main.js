@@ -53,18 +53,48 @@ function renderProducts(productsToRender) {
     });
 }
 
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.textContent = message;
+    toast.className = 'fixed bottom-5 right-5 bg-slate-900 text-white px-4 py-2 rounded-xl shadow-lg z-50';
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+    }, 2000);
+}
 // 4. Add to Cart Function
 function addToCart(productId) {
     // TODO: Find product by id
     // TODO: Add to cart array
     // TODO: Update cart count UI
     // TODO: Save to localStorage
+
+    const product = products.find(product => product.id === productId);
+
+    if (!product) {
+        return;
+    }
+
+    cart.push(product);
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCount();
+    showToast(`${product.name} added to cart`);
 }
 
 // 5. Update Cart Count UI
 function updateCartCount() {
     // TODO: Set textContent of cartCount
     // TODO: Show/hide cartCount based on items
+
+    cartCount.textContent = cart.length;
+
+    if (cart.length > 0) {
+        cartCount.classList.remove('hidden');
+    } else {
+        cartCount.classList.add('hidden');
+    }
 }
 
 // 6. Event Listeners
@@ -72,6 +102,15 @@ function updateCartCount() {
 if (searchInput) {
     searchInput.addEventListener('input', (e) => {
         // TODO: Filter products by name or description
+
+        const searchValue = e.target.value.toLowerCase();
+
+        const filteredProducts = products.filter(product =>
+            product.name.toLowerCase().includes(searchValue) ||
+            product.description.toLowerCase().includes(searchValue)
+        );
+
+        renderProducts(filteredProducts);
     });
 }
 
@@ -108,5 +147,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // TODO: Load cart from localStorage
     // TODO: Update cart count UI
     // TODO: Render all products initially
+
+    const savedCart = localStorage.getItem('cart');
+
+    if (savedCart) {
+        cart = JSON.parse(savedCart);
+    }
+
+    updateCartCount();
     renderProducts(products);
 });
